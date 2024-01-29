@@ -2,7 +2,7 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
 // Regular expression for validating email format
-const emailRegexPattern: RegExp = /^[^\s]+@[^\s@]+\.[^\s@]+$/;
+const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Define the interface for the User document
 export interface IUser extends Document {
@@ -64,7 +64,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
 // Middleware to hash the password before saving to the database
 userSchema.pre<IUser>('save', async function (next) {
     if (!this.isModified('password')) {
-        return next();
+           next();
     }
     this.password = await bcrypt.hash(this.password, 10);
     next();

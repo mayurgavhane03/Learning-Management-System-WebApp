@@ -6,16 +6,14 @@ require('dotenv').config();
 const dbUrl:string = process.env.DB_URL || ''
 
 
-const connectDb =  async () => {
+const connectDb = async () => {
     try{
-        (await mongoose.connect(dbUrl)).isObjectIdOrHexString((data:any)=>{
-            console.log(`Server is Connected with Port ${process.env.PORT}`);
-
+        await mongoose.connect(dbUrl).then((data:any) => {
+            console.log(`Database connected with ${data.connection.host}`)
         })
 
-    }catch(err){
-        console.log(err.message);
-        setTimeout(connectDb,50000);
+    }catch(error:any){
+        console.log(error.message);
     }
 }
 
