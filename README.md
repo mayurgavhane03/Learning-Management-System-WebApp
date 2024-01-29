@@ -120,6 +120,14 @@ Caching is a crucial aspect of ELearner, particularly managed by Redis. Redis se
       - cerate activation function token
       - now send the mail with ejs template 
           - to send sendMail enbuilt function
+  - Now activate our user
+    - our function take two aurguments 
+        - activation code from mail and activation_token from local storage with our activation secret 
+        - first decode the token using jwt verfy with activation secret
+        - now compare the users activation code with activation_code from mail 
+        - now check user is exist in our databse if exist give error
+        - NOW CREATE USER 
+      
 
 
 

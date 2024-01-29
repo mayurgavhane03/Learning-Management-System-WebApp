@@ -126,3 +126,42 @@ export const activateUser = CatchAsyncError(async (req: Request, res: Response, 
 
 
 
+
+// activate User
+
+interface IActivationRequest {
+    activation_token: string;
+    activation_code: string;
+}
+
+export const activateUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { activation_token, activation_code } = req.body as IActivationRequest;
+
+        const decodedToken: any = jwt.verify(activation_token, process.env.ACTIVATION_SECRET as string);
+
+        const newUser: { user: IUser; activationCode: string } = decodedToken as { user: IUser; activationCode: string };
+
+        if (newUser.activationCode !== activation_code) {
+            return next(new ErrorHandler('Invalid Activation Code', 400));
+        }
+
+        const { name, email, password } = newUser.user;
+
+        const existUser = await userModel.findOne({ email });
+
+        if (existUser) {
+            return next(new ErrorHandler('User already exists', 400));
+        }
+
+        // now we create the user in the database
+        const user = await userModel.create({ name, email, password });
+
+        res.status(201).json({
+            success: true,
+        });
+
+    } catch (err: any) {
+        return next(new ErrorHandler(err.message, 400));
+    }
+});
