@@ -5,6 +5,7 @@ import { CatchAsyncError } from '../middleware/catchAsyncError';
 import sendMail from '../utils/sendMail';
 import jwt, { Secret } from 'jsonwebtoken'; // Import jwt and Secret
 import { IUser } from '../models/user.model';
+import { sendToken } from '../utils/jwt';
 interface IRegistrationBody {
     name: string;
     email: string;
@@ -165,3 +166,47 @@ export const activateUser = CatchAsyncError(async (req: Request, res: Response, 
         return next(new ErrorHandler(err.message, 400));
     }
 });
+
+
+
+
+
+/*  LOGIN User  */
+
+
+
+
+interface ILoginRequest {
+     email:string;
+     password:string;
+}
+
+
+export const loginUser  =  CatchAsyncError(async (req:Request, res:Response, next:NextFunction) => {
+
+    try{
+
+        const {email, password} =req.body as ILoginRequest;
+
+        if(!email || !password){
+            return next(new ErrorHandler("please enter email and password", 400))
+        }
+        const user = await userModel.findOne({email}).select("+password");
+            
+        if(!user){
+            return next(new ErrorHandler("Invalid email or Password",400));
+
+        }
+        // now comparing passwith with databse hashpassword
+        const isPassword = await user.comparePasswords(password);
+        if(!isPassword){
+            return next(new ErrorHandler("Envalid email",400))
+        }
+        sendToken(user, 200, res)
+        
+
+
+    }catch(err:any){
+        return next(new ErrorHandler(err.message,400 ))
+    }
+})

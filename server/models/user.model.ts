@@ -1,5 +1,10 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
+require('dotenv').config()
+import jwt from "jsonwebtoken";
+
+
+
 
 // Regular expression for validating email format
 const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -17,6 +22,9 @@ export interface IUser extends Document {
     isVerified: boolean;
     courses: Array<{ courseId: string }>;
     comparePasswords: (password: string) => Promise<boolean>;
+    // this for login or SignIn
+    SignAccessToken : ()=> string;
+    SignRefreshToken : ()=> string;
 }
 
 // Define the schema for the User document
@@ -80,6 +88,42 @@ userSchema.pre<IUser>('save', async function (next) {
     }
 };
  */
+
+
+// Sign Access tokeN
+ // => when user login we will create access token then when user relod or access to profile then we will just compare it 
+  // id is login user_id 
+
+
+/*  userSchema.methods.SignAccessToken =  function (){
+    return jwt.sign({id: this._id}, process.env.ACCESS_TOKEN || '' )
+ }
+
+ // Sign Refress token 
+
+ userSchema.methods.SignRefreshToken =  function (){
+    return jwt.sign({id: this._id}, process.env.REFRESH_TOKEN  || '')
+ } */
+
+
+ userSchema.methods.SignAccessToken = function () {
+    if (!process.env.ACCESS_TOKEN) {
+        throw new Error("Access token secret is not defined");
+    }
+
+    return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN, { expiresIn: '15m' });
+};
+
+userSchema.methods.SignRefreshToken = function () {
+    if (!process.env.REFRESH_TOKEN) {
+        throw new Error("Refresh token secret is not defined");
+    }
+
+    return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN, { expiresIn: '7d' });
+};
+
+
+
 userSchema.methods.comparePasswords = async function (enteredPassword: string): Promise<boolean> {
    return await bcrypt.compare(enteredPassword, this.password);
 };

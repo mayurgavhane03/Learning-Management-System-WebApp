@@ -58,6 +58,12 @@ Welcome to ELearner This README provides a comprehensive guide to understanding 
 
 Caching is a crucial aspect of ELearner, particularly managed by Redis. Redis serves as an efficient, in-memory data store that significantly enhances application performance. Key aspects of Redis integration include:
 
+In a typical web application architecture, Redis might be used for various purposes on the server-side, like caching session data, managing distributed locks, or storing temporary data. Meanwhile, cookies are used on the client-side to store information that needs to persist between different requests from the same user.
+
+For example, you might use Redis to store a session ID on the server, and then that session ID could be stored in a cookie on the client-side. The server can then use the session ID from the cookie to retrieve session data stored in Redis.
+
+To sum up, Redis and cookies serve different purposes in a web application, with Redis being a server-side storage solution and cookies being a client-side storage mechanism.
+
 - **Handling Large Data**: Redis efficiently manages extensive datasets within the website cache, ensuring rapid data retrieval.
 
 - **Optimizing API Requests**: During peak loads, Redis plays a pivotal role in handling a substantial volume of API requests, maintaining a seamless user experience.
@@ -109,7 +115,7 @@ Caching is a crucial aspect of ELearner, particularly managed by Redis. Redis se
 #
 
 
-# mail configureation
+# Authentication 
 
   - create mail template
   - now goto google -> security -> search app password -> give name nodemailer -> it generate one password
@@ -130,14 +136,13 @@ Caching is a crucial aspect of ELearner, particularly managed by Redis. Redis se
       
 
 
+![Alt text](image.png)
 
 
-
-
-
-
-
-
+  => login api
+      -  when user hit the login api then server check or validate the email and password with existing data in database
+      - after checking server send cooke to the browser access toke exire after  min Refresh token expire after long time 
+      - whenever we refresh the page we hit api refresh to generate new token 
 
 
 
